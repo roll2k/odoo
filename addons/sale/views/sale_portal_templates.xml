@@ -490,17 +490,11 @@
 
                                     <t t-set="current_subtotal" t-value="current_subtotal + line.price_subtotal" groups="account.group_show_line_subtotals_tax_excluded"/>
                                     <t t-set="current_subtotal" t-value="current_subtotal + line.price_total" groups="account.group_show_line_subtotals_tax_included"/>
+                                    <tr t-att-class="'bg-200 fw-bold o_line_section' if line.display_type == 'line_section' else 'fst-italic o_line_note' if line.display_type == 'line_note' else ''">
 
                                 <t t-call="sale.order_line_tr"/>
-                                <tr t-if="current_section and (line_last or lines_to_report[line_index+1].display_type == 'line_section') and not line.is_downpayment"
-                                    class="is-subtotal text-end">
-                                    <td colspan="99">
-                                        <strong class="mr16">Subtotal</strong>
-                                        <span t-out="current_subtotal"
-                                            t-options='{"widget": "monetary", "display_currency": sale_order.pricelist_id.currency_id}'
-                                        />
-                                    </td>
-                                </tr>
+                            </tr>
+                                <t t-call="sale.order_line_total_tr"/>
                             </t>
                         </tbody>
                     </table>
@@ -552,7 +546,6 @@
     </template>
 
     <template id="order_line_tr">
-        <tr t-att-class="'bg-200 fw-bold o_line_section' if line.display_type == 'line_section' else 'fst-italic o_line_note' if line.display_type == 'line_note' else ''">
             <t t-if="not line.display_type">
                 <td id="product_name">
                     <span t-field="line.name"/>
@@ -599,6 +592,18 @@
                     <span t-field="line.name"/>
                 </td>
             </t>
-        </tr>
+
+    </template>
+
+    <template id="order_line_total_tr">
+        <tr t-if="current_section and (line_last or lines_to_report[line_index+1].display_type == 'line_section') and not line.is_downpayment"
+        class="is-subtotal text-end">
+        <td colspan="99">
+            <strong class="mr16">Subtotal</strong>
+            <span t-out="current_subtotal"
+                t-options='{"widget": "monetary", "display_currency": sale_order.pricelist_id.currency_id}'
+            />
+        </td>
+    </tr>
     </template>
 </odoo>
