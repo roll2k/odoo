@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
 
-    <template id="sale_order_portal_line" inherit_id="sale.order_line_tr">
+    <template id="sale_order_portal_line" inherit_id="sale.order_line_td">
         <xpath expr="//t[@t-if='not line.display_type']" position="inside">
             <td class="text-center" t-if="display_remove">
                 <a t-att-data-line-id="line.id" t-att-data-unlink="True" href="#" class="mb8 js_update_line_json d-print-none" t-if="sale_order.state in ('draft', 'sent') and line.sale_order_option_ids" aria-label="Remove" title="Remove">

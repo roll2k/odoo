@@ -464,37 +464,46 @@
                     <table t-att-data-order-id="sale_order.id" t-att-data-token="sale_order.access_token" class="table table-sm" id="sales_order_table">
                         <thead class="bg-100">
                             <tr>
-                                <th class="text-start" id="product_name_header">Products</th>
-                                <th class="text-end">Quantity</th>
-                                <th t-attf-class="text-end {{ 'd-none d-sm-table-cell' if report_type == 'html' else '' }}">
-                                    Unit Price
-                                </th>
-                                <th t-if="display_discount" t-attf-class="text-end {{ 'd-none d-sm-table-cell' if report_type == 'html' else '' }}">
-                                    <span>Disc.%</span>
-                                </th>
-                                <th t-attf-class="text-end {{ 'd-none d-md-table-cell' if report_type == 'html' else '' }}">
-                                    <span>Taxes</span>
-                                </th>
-                                <th class="text-end" >
-                                    <span groups="account.group_show_line_subtotals_tax_excluded">Amount</span>
-                                    <span groups="account.group_show_line_subtotals_tax_included">Total Price</span>
-                                </th>
+                                <t t-call="sale.order_table_header"/>
+                                <t t-call="sale.order_table_header"/>
                             </tr>
                         </thead>
                         <tbody class="sale_tbody">
 
                             <t t-set="current_subtotal" t-value="0"/>
                             <t t-set="lines_to_report" t-value="sale_order._get_order_lines_to_report()"/>
+                            <t t-set="row" t-value="[]"/>
 
-                            <t t-foreach="lines_to_report" t-as="line">
+                            <t t-foreach="lines_to_report" t-as="ll">
 
-                                    <t t-set="current_subtotal" t-value="current_subtotal + line.price_subtotal" groups="account.group_show_line_subtotals_tax_excluded"/>
-                                    <t t-set="current_subtotal" t-value="current_subtotal + line.price_total" groups="account.group_show_line_subtotals_tax_included"/>
-                                    <tr t-att-class="'bg-200 fw-bold o_line_section' if line.display_type == 'line_section' else 'fst-italic o_line_note' if line.display_type == 'line_note' else ''">
+                                    <t t-set="current_subtotal" t-value="current_subtotal + ll.price_subtotal" groups="account.group_show_line_subtotals_tax_excluded"/>
+                                    <t t-set="current_subtotal" t-value="current_subtotal + ll.price_total" groups="account.group_show_line_subtotals_tax_included"/>
+                                    <t t-if="len(row) == 0 and (ll_last or (current_section and (ll_last or lines_to_report[l_index+1].display_type == 'line_section') and not ll.is_downpayment ))">
+                                        <tr t-att-class="'bg-200 fw-bold o_line_section' if ll.display_type == 'line_section' else 'fst-italic o_line_note' if ll.display_type == 'line_note' else ''">
+                                                <t t-set="line" t-value="ll"/>
+                                                <t t-call="sale.order_line_td"/>     <td colspan="5"></td>                                      
+    
+                                        </tr>
+                                        <t t-set="line" t-value="ll"/>
+                                        <t t-call="sale.order_line_total_tr"/>                                    
+                                    </t>
 
-                                <t t-call="sale.order_line_tr"/>
-                            </tr>
-                                <t t-call="sale.order_line_total_tr"/>
+
+                                   
+                                    <t t-elif="len(row) == 0 and not (current_section and (line_last or lines_to_report[line_index+1].display_type == 'line_section') and not ll.is_downpayment )">
+                                        <t t-set="row" t-value="[ll]"/>
+                                    </t>
+                                    <t t-elif="len(row) == 1">
+                                        <tr t-att-class="'bg-200 fw-bold o_line_section' if ll.display_type == 'line_section' else 'fst-italic o_line_note' if ll.display_type == 'line_note' else ''">
+                                            <t t-set="line" t-value="row[0]"/>
+                                            <t t-call="sale.order_line_td"/>                                           
+                                            <t t-set="line" t-value="ll"/>
+                                            <t t-call="sale.order_line_td"/> 
+                                        </tr>
+                                            <t t-set="line" t-value="ll"/>
+                                            <t t-call="sale.order_line_total_tr"/> 
+                                        <t t-set="row" t-value="[]"/>
+                                    </t>
                             </t>
                         </tbody>
                     </table>
@@ -545,7 +554,7 @@
         </table>
     </template>
 
-    <template id="order_line_tr">
+    <template id="order_line_td">
             <t t-if="not line.display_type">
                 <td id="product_name">
                     <span t-field="line.name"/>
@@ -605,5 +614,23 @@
             />
         </td>
     </tr>
+    </template>
+
+    <template id="order_table_header">
+        <th class="text-start" id="product_name_header">Products</th>
+        <th class="text-end">Quantity</th>
+        <th t-attf-class="text-end {{ 'd-none d-sm-table-cell' if report_type == 'html' else '' }}">
+            Unit Price
+        </th>
+        <th t-if="display_discount" t-attf-class="text-end {{ 'd-none d-sm-table-cell' if report_type == 'html' else '' }}">
+            <span>Disc.%</span>
+        </th>
+        <th t-attf-class="text-end {{ 'd-none d-md-table-cell' if report_type == 'html' else '' }}">
+            <span>Taxes</span>
+        </th>
+        <th class="text-end" >
+            <span groups="account.group_show_line_subtotals_tax_excluded">Amount</span>
+            <span groups="account.group_show_line_subtotals_tax_included">Total Price</span>
+        </th>
     </template>
 </odoo>
