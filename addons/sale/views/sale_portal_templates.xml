@@ -510,7 +510,7 @@
                                         </tr>
                                     </t>
                                     <t t-else="">
-                                        <tr t-att-class="'bg-200 fw-bold o_line_section' if ll.display_type == 'line_section' else 'fst-italic o_line_note' if ll.display_type == 'line_note' else ''">
+                                        <tr t-att-class="'bg-200 fw-bold o_line_section' if row[0].display_type == 'line_section' else 'fst-italic o_line_note' if row[0].display_type == 'line_note' else ''">
                                             <t t-set="line" t-value="row[0]"/>
                                             <t t-call="sale.order_line_td"/>                                               
                                         </tr>
