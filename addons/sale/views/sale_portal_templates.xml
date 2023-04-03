@@ -476,34 +476,60 @@
 
                             <t t-foreach="lines_to_report" t-as="ll">
 
-                                    <t t-set="current_subtotal" t-value="current_subtotal + ll.price_subtotal" groups="account.group_show_line_subtotals_tax_excluded"/>
-                                    <t t-set="current_subtotal" t-value="current_subtotal + ll.price_total" groups="account.group_show_line_subtotals_tax_included"/>
-                                    <t t-if="len(row) == 0 and (ll_last or (current_section and (ll_last or lines_to_report[l_index+1].display_type == 'line_section') and not ll.is_downpayment ))">
+                                <t t-set="current_subtotal" t-value="current_subtotal + ll.price_subtotal" groups="account.group_show_line_subtotals_tax_excluded"/>
+                                <t t-set="current_subtotal" t-value="current_subtotal + ll.price_total" groups="account.group_show_line_subtotals_tax_included"/>
+
+                                <t t-if="len(row) == 0 and ll_last">
+                                    <t t-if="not ll.display_type">
                                         <tr t-att-class="'bg-200 fw-bold o_line_section' if ll.display_type == 'line_section' else 'fst-italic o_line_note' if ll.display_type == 'line_note' else ''">
-                                                <t t-set="line" t-value="ll"/>
-                                                <t t-call="sale.order_line_td"/>     <td colspan="5"></td>                                      
-    
+                                            <t t-set="line" t-value="ll"/>
+                                            <t t-call="sale.order_line_td"/>     <td colspan="5"></td>                                      
                                         </tr>
-                                        <t t-set="line" t-value="ll"/>
-                                        <t t-call="sale.order_line_total_tr"/>                                    
                                     </t>
+                                    <t t-else="">
+                                        <tr t-att-class="'bg-200 fw-bold o_line_section' if line.display_type == 'line_section' else 'fst-italic o_line_note' if line.display_type == 'line_note' else ''">
+                                            <t t-set="line" t-value="ll"/>
+                                            <t t-call="sale.order_line_td"/>
+                                        </tr>
+                                    </t>
+                                </t>
 
 
                                    
-                                    <t t-elif="len(row) == 0 and not (current_section and (line_last or lines_to_report[line_index+1].display_type == 'line_section') and not ll.is_downpayment )">
-                                        <t t-set="row" t-value="[ll]"/>
-                                    </t>
-                                    <t t-elif="len(row) == 1">
+                                <t t-elif="len(row) == 0 and (not ll.display_type)">
+                                    <t t-set="row" t-value="[ll]"/>
+                                </t>
+
+                                <t t-elif="len(row) == 1">
+                                    <t t-if="not ll.display_type">
                                         <tr t-att-class="'bg-200 fw-bold o_line_section' if ll.display_type == 'line_section' else 'fst-italic o_line_note' if ll.display_type == 'line_note' else ''">
                                             <t t-set="line" t-value="row[0]"/>
                                             <t t-call="sale.order_line_td"/>                                           
                                             <t t-set="line" t-value="ll"/>
                                             <t t-call="sale.order_line_td"/> 
                                         </tr>
-                                            <t t-set="line" t-value="ll"/>
-                                            <t t-call="sale.order_line_total_tr"/> 
-                                        <t t-set="row" t-value="[]"/>
                                     </t>
+                                    <t t-else="">
+                                        <tr t-att-class="'bg-200 fw-bold o_line_section' if ll.display_type == 'line_section' else 'fst-italic o_line_note' if ll.display_type == 'line_note' else ''">
+                                            <t t-set="line" t-value="row[0]"/>
+                                            <t t-call="sale.order_line_td"/>                                               
+                                        </tr>
+                                        <tr t-att-class="'bg-200 fw-bold o_line_section' if ll.display_type == 'line_section' else 'fst-italic o_line_note' if ll.display_type == 'line_note' else ''">
+                                            <t t-set="line" t-value="ll"/>
+                                            <t t-call="sale.order_line_td"/>                                               
+                                        </tr>                                  
+
+                                    </t>
+                                    
+
+                                    <t t-set="row" t-value="[]"/>
+                                </t>
+                                <t t-else="">
+
+                                </t>
+
+                                <t t-set="line" t-value="ll"/>
+                                <t t-call="sale.order_line_total_tr"/>                                     
                             </t>
                         </tbody>
                     </table>
